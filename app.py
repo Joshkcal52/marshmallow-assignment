@@ -1,12 +1,11 @@
 
-from flask import Flask, jsonify, request
+from flask import Flask
 import psycopg2
-from db import *
 import os
 
-from routes.categories_routes import category
-from routes.companies_routes import company
-from routes.products_routes import products
+from db import *
+from util.blueprints import register_blueprints
+import routes
 
 
 flask_host = os.environ.get("FLASK_HOST")
@@ -20,9 +19,7 @@ database_name = os.environ.get("DATABASE_NAME")
 
 app = Flask(__name__)
 
-app.register_blueprint(category)
-app.register_blueprint(company)
-app.register_blueprint(products)
+register_blueprints(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"{database_scheme}{database_user}@{database_address}:{database_port}/{database_name}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -37,7 +34,6 @@ def create_tables():
         print("Tables created successfully")
 
 
-create_tables()
-
 if __name__ == '__main__':
+    create_tables()
     app.run(host=flask_host, port=flask_port)
