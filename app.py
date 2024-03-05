@@ -1,5 +1,6 @@
 
 from flask import Flask
+from flask_cors import CORS
 import psycopg2
 import os
 
@@ -9,7 +10,7 @@ import routes
 
 
 flask_host = os.environ.get("FLASK_HOST")
-flask_port = os.environ.get("FLASK_POST")
+flask_port = os.environ.get("FLASK_PORT")
 
 database_scheme = os.environ.get("DATABASE_SCHEME")
 database_user = os.environ.get("DATABASE_USER")
@@ -18,6 +19,7 @@ database_port = os.environ.get("DATABASE_PORT")
 database_name = os.environ.get("DATABASE_NAME")
 
 app = Flask(__name__)
+CORS(app)
 
 register_blueprints(app)
 

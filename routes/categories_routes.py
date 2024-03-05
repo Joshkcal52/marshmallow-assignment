@@ -19,7 +19,7 @@ def get_category_by_id_route(id):
     return get_category_by_id(id)
 
 
-@category.route('/category/update/<id>', methods=['PUT'])
+@category.route('/category/<id>', methods=['PUT'])
 def update_category_route(id):
     return update_category(request, id)
 

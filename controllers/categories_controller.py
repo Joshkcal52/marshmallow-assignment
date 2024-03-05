@@ -26,8 +26,7 @@ def create_category(req):
 
 def get_all_categories():
     categories = Categories.query.all()
-    categories_list = [category_schema.dump(category) for category in categories]
-    return jsonify({'categories': categories_list}), 200
+    return jsonify({'message': 'categories found', 'results': categories_schema.dump(categories)}), 200
 
 
 def get_category_by_id(id):

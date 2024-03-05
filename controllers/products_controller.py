@@ -3,8 +3,10 @@ from db import db
 from models.products import Products, product_schema, products_schema
 from models.category import Categories
 from util.reflections import populate_object
+from lib.authenticate import auth
 
 
+@auth
 def create_product(req):
     post_data = req.form if req.form else req.json
 
@@ -22,6 +24,7 @@ def create_product(req):
         db.session.add(new_product)
         db.session.commit()
     except Exception as e:
+        print(e)
         db.session.rollback()
         return jsonify({'message': 'product could not be created'}), 400
 
@@ -38,6 +41,23 @@ def get_product_by_id(req, product_id):
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
 
     return jsonify({'message': 'product found', 'result': product_schema.dump(product_query)}), 200
+
+
+@auth
+def get_active_products():
+
+    product_query = db.session.query(Products).filter(Products.active == True).all()
+    return jsonify({'message': 'Active products found', 'result': products_schema.dump(product_query)}), 200
+
+
+def get_products_by_company_id(company_id):
+
+    product_query = db.session.query(Products).filter(Products.company_id == company_id).all()
+
+    if not product_query:
+        return jsonify({'message': f'No products found for company {company_id}'}), 404
+
+    return jsonify({'message': f'Products for company {company_id} found', 'result': products_schema.dump(product_query)}), 200
 
 
 def update_product(req, product_id):
@@ -83,3 +103,8 @@ def delete_product(product_id):
         return jsonify({"message": "unable to delete record"}), 400
 
     return jsonify({"message": "product has been deleted"}), 200
+
+# add 3 functions to products controller
+# get all active products
+# add category to products
+# get products by company id
