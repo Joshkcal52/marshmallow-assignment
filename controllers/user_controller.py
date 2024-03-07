@@ -7,7 +7,6 @@ from models.__init__ import Users, user_schema, users_schema
 from util.reflections import populate_object
 
 
-@auth_admin
 def add_user(req):
     req_data = request.form if request.form else request.get_json()
 

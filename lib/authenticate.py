@@ -20,12 +20,14 @@ def validate_token(arg_zero):
     auth_token = arg_zero.headers['auth']
 
     if not auth_token or not validate_uuid4(auth_token):
+        print("Invalid or missing token")
         return False
 
     existing_token = db.session.query(AuthTokens).filter(AuthTokens.auth_token == auth_token).first()
 
     if existing_token:
         if existing_token.expiration > datetime.utcnow():
+            print("Token expired or not found")
             return existing_token
 
     else:
