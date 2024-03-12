@@ -11,17 +11,17 @@ def create_company_route():
 
 @company.route('/companies', methods=['GET'])
 def get_all_companies_route():
-    return controllers.get_all_companies()
+    return controllers.get_all_companies(request)
 
 
 @company.route('/company/<id>', methods=['GET'])
 def get_company_by_id_route(id):
-    return controllers.get_company_by_id(id)
+    return controllers.get_company_by_id(request, id)
 
 
 @company.route('/company/<id>', methods=['PUT'])
 def update_company_route(id):
-    return controllers.update_company(request, id)
+    return controllers.update_company(id)
 
 
 @company.route('/company/delete/<id>', methods=['DELETE'])

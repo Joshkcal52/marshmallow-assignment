@@ -17,15 +17,16 @@ class Users(db.Model):
 
     auth = db.relationship("AuthTokens", back_populates="user")
 
-    def __init__(self, first_name, last_name, email, password, role):
+    def __init__(self, first_name, last_name, email, password, role, active=True):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.password = password
         self.role = role
+        self.active = active
 
     def get_new_user():
-        return Users('', '', '', '', '', active)
+        return Users('', '', '', '', '', True)
 
 
 class UsersSchema(ma.Schema):

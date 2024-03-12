@@ -1,12 +1,12 @@
-from flask import jsonify, request
+from flask import jsonify
 from db import db
 from models.products import Products, product_schema, products_schema
 from models.category import Categories
 from util.reflections import populate_object
-from lib.authenticate import auth
+from lib.authenticate import auth, auth_admin
 
 
-@auth
+@auth_admin
 def create_product(req):
     post_data = req.form if req.form else req.json
 
@@ -31,12 +31,14 @@ def create_product(req):
     return jsonify({'message': 'product created', 'result': product_schema.dump(new_product)}), 201
 
 
-def get_all_products():
+@auth
+def get_all_products(req):
     product_query = db.session.query(Products).all()
 
     return jsonify({'message': 'products found', 'result': products_schema.dump(product_query)}), 200
 
 
+@auth
 def get_product_by_id(req, product_id):
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
 
@@ -44,12 +46,13 @@ def get_product_by_id(req, product_id):
 
 
 @auth
-def get_active_products():
+def get_active_products(req):
 
     product_query = db.session.query(Products).filter(Products.active == True).all()
     return jsonify({'message': 'Active products found', 'result': products_schema.dump(product_query)}), 200
 
 
+@auth
 def get_products_by_company_id(company_id):
 
     product_query = db.session.query(Products).filter(Products.company_id == company_id).all()
@@ -60,6 +63,7 @@ def get_products_by_company_id(company_id):
     return jsonify({'message': f'Products for company {company_id} found', 'result': products_schema.dump(product_query)}), 200
 
 
+@auth_admin
 def update_product(req, product_id):
     post_data = req.form if req.form else req.json
     product_query = db.session.query(Products).filter(Products.product_id == product_id).first()
@@ -75,6 +79,7 @@ def update_product(req, product_id):
     return jsonify({'message': 'product updated', 'result': product_schema.dump(product_query)}), 200
 
 
+@auth_admin
 def product_add_category(req):
     post_data = req.form if req.form else req.json
     product_id = post_data.get('product_id')
@@ -89,6 +94,7 @@ def product_add_category(req):
     return jsonify({'message': 'relationship added.', 'product info': product_schema.dump(product_query)}), 200
 
 
+@auth_admin
 def delete_product(product_id):
     query = db.session.query(Products).filter(Products.product_id == product_id).first()
 
@@ -103,8 +109,3 @@ def delete_product(product_id):
         return jsonify({"message": "unable to delete record"}), 400
 
     return jsonify({"message": "product has been deleted"}), 200
-
-# add 3 functions to products controller
-# get all active products
-# add category to products
-# get products by company id

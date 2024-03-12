@@ -2,8 +2,10 @@ from flask import jsonify, request
 from db import db
 from models.category import Categories, category_schema, categories_schema
 from util.reflections import populate_object
+from lib.authenticate import auth_admin, auth
 
 
+@auth_admin
 def create_category(req):
     post_data = req.form if req.form else req.json
 
@@ -24,12 +26,14 @@ def create_category(req):
         return jsonify({"message": "unable to create record"}), 400
 
 
-def get_all_categories():
+@auth
+def get_all_categories(req):
     categories = Categories.query.all()
     return jsonify({'message': 'categories found', 'results': categories_schema.dump(categories)}), 200
 
 
-def get_category_by_id(id):
+@auth
+def get_category_by_id(request, id):
     category = Categories.query.get(id)
 
     if category:
@@ -38,6 +42,7 @@ def get_category_by_id(id):
     return jsonify({'message': 'Category not found'}), 404
 
 
+@auth_admin
 def update_category(id):
     data = request.get_json()
     category = Categories.query.get(id)
@@ -56,6 +61,7 @@ def update_category(id):
     return jsonify({'message': 'Category not found'}), 404
 
 
+@auth_admin
 def delete_category(id):
     category = Categories.query.get(id)
 

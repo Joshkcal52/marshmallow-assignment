@@ -2,8 +2,10 @@ from flask import jsonify, request
 from db import db
 from models.company import Companies, company_schema, companies_schema
 from util.reflections import populate_object
+from lib.authenticate import auth_admin, auth
 
 
+@auth_admin
 def create_company(req):
     post_data = req.form if req.form else req.json
 
@@ -25,12 +27,14 @@ def create_company(req):
         return jsonify({"message": "Unable to create record"}), 400
 
 
-def get_all_companies():
+@auth
+def get_all_companies(req):
     companies = Companies.query.all()
     return jsonify({'message': 'Companies found', 'results': companies_schema.dump(companies)}), 200
 
 
-def get_company_by_id(id):
+@auth
+def get_company_by_id(request, id):
     company = Companies.query.get(id)
 
     if company:
@@ -39,6 +43,7 @@ def get_company_by_id(id):
     return jsonify({'message': 'Company not found'}), 404
 
 
+@auth_admin
 def update_company(id):
     data = request.get_json()
     company = Companies.query.get(id)
@@ -58,6 +63,7 @@ def update_company(id):
     return jsonify({'message': 'Company not found'}), 404
 
 
+@auth_admin
 def delete_company(id):
     company = Companies.query.get(id)
 
